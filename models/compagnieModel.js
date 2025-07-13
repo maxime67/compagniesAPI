@@ -14,7 +14,8 @@ const uniteLegaleSchema = new mongoose.Schema({
     },
     dateCreationUniteLegale: {
         type: Date,
-        required: true
+        required: true,
+        index: true
     },
     sexeUniteLegale: {
         type: String,
@@ -52,7 +53,8 @@ const uniteLegaleSchema = new mongoose.Schema({
     },
     dateDebut: {
         type: Date,
-        required: true
+        required: true,
+        index: true
     },
     etatAdministratifUniteLegale: {
         type: String,
@@ -88,5 +90,19 @@ const uniteLegaleSchema = new mongoose.Schema({
     versionKey: false,
     collection: 'compagnie' // Spécifie le nom exact de ta collection existante
 });
+
+// Index composé pour optimiser les requêtes combinées
+uniteLegaleSchema.index({
+    anneeCategorieEntreprise: 1,
+    dateCreationUniteLegale: 1
+});
+
+// Index pour les requêtes par statut et date
+uniteLegaleSchema.index({
+    etatAdministratifUniteLegale: 1,
+    anneeCategorieEntreprise: 1
+});
+
+
 
 module.exports = mongoose.model('UniteLegale', uniteLegaleSchema, 'compagnie');
