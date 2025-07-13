@@ -62,7 +62,7 @@ class CompagnieService {
                 await processingFunction(result.data, page);
 
                 processed += result.data.length;
-                console.log(`Traité ${processed} éléments...`);
+
 
                 hasMore = result.pagination.hasMore;
                 page++;

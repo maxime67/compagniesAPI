@@ -16,14 +16,26 @@ class CompagnieRepository {
             throw error;
         }
     }
+
     async findByMinimalCreationDate(date, limit = 20, page = 1) {
         try {
             const skip = (page - 1) * limit;
             const maxLimit = 100;
             const effectiveLimit = Math.min(limit, maxLimit);
 
+            const startDate = new Date(date, 0, 1);
+            var endDate
+            if(startDate.getFullYear() === new Date(Date.now()).getFullYear()){
+                endDate = Date.now()
+            } else {
+                endDate = new Date(startDate.getFullYear() + 1, 0, 1);
+            }
+
             return await COMPAGNIE.find({
-                dateCreationUniteLegale: { $gt: date }
+                dateCreationUniteLegale: {
+                    $gt: startDate,
+                    $lt: endDate
+                }
             })
                 .limit(effectiveLimit)
                 .skip(skip)
@@ -33,32 +45,26 @@ class CompagnieRepository {
             throw error;
         }
     }
-    // Nouvelle méthode pour compter les résultats
+
     async countByMinimalCreationDate(date) {
         try {
+            // CORRECTION: Utiliser le même champ que dans findByMinimalCreationDate
+            const startDate = new Date(date, 0, 1); // 1er janvier de l'année spécifiée
+            var endDate
+            if(startDate.getFullYear() === new Date(Date.now()).getFullYear()){
+                endDate = Date.now()
+            } else {
+                endDate = new Date(startDate.getFullYear() + 1, 0, 1);
+            }
+
             return await COMPAGNIE.countDocuments({
-                anneeCategorieEntreprise: { $gt: date }
-            });
-        } catch (error) {
-            console.error(error);
-            throw error;
-        }
-    }
-
-    // Méthode pour traitement en streaming (pour de gros volumes)
-    async streamByMinimalCreationDate(date, callback) {
-        try {
-            const cursor = COMPAGNIE.find({
-                anneeCategorieEntreprise: { $gt: date }
-            }).lean().cursor();
-
-            cursor.on('data', callback);
-            cursor.on('error', (error) => {
-                console.error('Erreur dans le stream:', error);
-                throw error;
-            });
-
-            return cursor;
+                    dateCreationUniteLegale: {
+                        $gt: startDate,
+                        $lt: endDate
+                    }
+                }
+            )
+                ;
         } catch (error) {
             console.error(error);
             throw error;

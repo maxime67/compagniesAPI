@@ -54,7 +54,7 @@ class CompagnieController {
         try {
             const date = req.query.date;
 
-            if (!date) {
+            if (!date || isNaN(Date.parse(date))) {
                 return res.status(400).json({
                     error: true,
                     message: "Le paramètre date est requis"
